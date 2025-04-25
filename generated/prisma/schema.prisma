@@ -68,3 +68,52 @@ model Session {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+
+// CREATE TABLE "User" (
+//   id TEXT PRIMARY KEY DEFAULT gen_random_uuid(),
+//   email TEXT UNIQUE NOT NULL,
+//   password TEXT NOT NULL,
+//   name TEXT,
+//   emailVerified TIMESTAMP,
+//   image TEXT,
+//   createdAt TIMESTAMP NOT NULL DEFAULT NOW(),
+//   updatedAt TIMESTAMP NOT NULL DEFAULT NOW()
+// );
+//
+// CREATE TABLE "Profile" (
+//   id TEXT PRIMARY KEY DEFAULT gen_random_uuid(),
+//   bio TEXT,
+//   avatarUrl TEXT,
+//   userId TEXT UNIQUE NOT NULL,
+//   CONSTRAINT fk_user FOREIGN KEY(userId) REFERENCES "User"(id) ON DELETE CASCADE
+// );
+//
+// CREATE TABLE "Post" (
+//   id TEXT PRIMARY KEY DEFAULT gen_random_uuid(),
+//   title TEXT NOT NULL,
+//   content TEXT,
+//   published BOOLEAN NOT NULL DEFAULT FALSE,
+//   createdAt TIMESTAMP NOT NULL DEFAULT NOW(),
+//   updatedAt TIMESTAMP NOT NULL DEFAULT NOW(),
+//   authorId TEXT NOT NULL,
+//   CONSTRAINT fk_author FOREIGN KEY(authorId) REFERENCES "User"(id) ON DELETE CASCADE
+// );
+//
+// CREATE TABLE "Comment" (
+//   id TEXT PRIMARY KEY DEFAULT gen_random_uuid(),
+//   text TEXT NOT NULL,
+//   createdAt TIMESTAMP NOT NULL DEFAULT NOW(),
+//   postId TEXT NOT NULL,
+//   authorId TEXT NOT NULL,
+//   CONSTRAINT fk_post FOREIGN KEY(postId) REFERENCES "Post"(id) ON DELETE CASCADE,
+//   CONSTRAINT fk_comment_author FOREIGN KEY(authorId) REFERENCES "User"(id) ON DELETE CASCADE
+// );
+//
+// CREATE TABLE "Session" (
+//   id TEXT PRIMARY KEY DEFAULT gen_random_uuid(),
+//   sessionToken TEXT UNIQUE NOT NULL,
+//   userId TEXT NOT NULL,
+//   expires TIMESTAMP NOT NULL,
+//   CONSTRAINT fk_session_user FOREIGN KEY(userId) REFERENCES "User"(id) ON DELETE CASCADE
+// );
