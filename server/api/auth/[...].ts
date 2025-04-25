@@ -12,8 +12,7 @@ const prisma = new PrismaClient()
 
 async function getMe(session: any) {
     return await $fetch('/api/me', {
-      method: 'POST',
-      query: {
+      method: 'POST', query: {
         API_ROUTE_SECRET: runtimeConfig.API_ROUTE_SECRET,
       },
       body: {
