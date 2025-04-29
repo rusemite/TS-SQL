@@ -13,15 +13,15 @@
         </div>
         <div class = "flex flex-col gap-2">
           <label for="schedule">Insert schedule</label>
-          <input class="text-black" name="schedule" type="text" placeholder="Put in any day of the week" v-model="postschedule" />
+          <input class="text-black" name="schedule" type="text" placeholder="Put in any weekday" v-model="postschedule" />
         </div>
         <div class = "flex flex-col gap-2">
           <label for="salary">Insert salary</label>
-          <input class="text-black" name="salary" type="text" placeholder="Put in any day of the week" v-model="postsalary" />
+          <input class="text-black" name="salary" type="text" placeholder="Put in the salary" v-model="postsalary" />
         </div>
         <div class = "flex flex-col gap-2">
           <label for="profile">Insert profile</label>
-          <input class="text-black" name="profile" type="text" placeholder="Put in any day of the week" v-model="postprofile" />
+          <input class="text-black" name="profile" type="text" placeholder="Put in the profile" v-model="postprofile" />
         </div>
         <button class= "w-[100px] bg-green-900 hover:bg-red-900 text-white rounded-xl" type="submit">POST</button>
       </form>
@@ -37,7 +37,15 @@
         </div>
         <div class = "flex flex-col gap-2">
           <label for="schedule">Filter by schedule</label>
-          <input class="text-black" name="schedule" type="text" placeholder="Put in any day of the week" v-model="getschedule" />
+          <input class="text-black" name="schedule" type="text" placeholder="Put in any weekday" v-model="getschedule" />
+        </div>
+        <div class = "flex flex-col gap-2">
+          <label for="salary">Filter by salary</label>
+          <input class="text-black" name="salary" type="number" placeholder="Put in the salary" v-model="getsalary" />
+        </div>
+        <div class = "flex flex-col gap-2">
+          <label for="profile">Filter by profile</label>
+          <input class="text-black" name="profile" type="text" placeholder="Put in the profile" v-model="getprofile" />
         </div>
         <button class= "w-[100px] bg-green-900 hover:bg-red-900 text-white rounded-xl" type="submit">Find</button>
       </form>
@@ -59,9 +67,47 @@
           <td class= "border border-gray-300 px-4 py-2">{{doctor.schedule}}</td>
           <td class="border border-gray-300 px-4 py-2">{{doctor.salary}}</td>
           <td class= "border border-gray-300 px-4 py-2">{{doctor.profile}}</td>
+          <td class= "border border-gray-300 px-4 py-2"><button @click = "deleteData(doctor.doctor_id)"
+              class="w-[40px] rounded-full bg-red-800 text-white font-bold">X</button></td>
+          <td class= "border border-gray-300 px-4 py-2"><button @click = "updateData(doctor.doctor_id)"
+              class="w-[40px] rounded-full bg-green-800 text-white font-bold">U</button></td>
         </tr>
       </tbody>
     </table>
+
+    <div class = "flex fixed inset-0 items-center justify-center bg-black bg-opacity-50 border-2 border-gray-900" v-show="modal">
+    <form @submit.prevent = "putData" class = "flex flex-row gap-4 flex-wrap">
+      <div class = "flex flex-col gap-2">
+        <label for="doctor_id">Update id</label>
+        <input class = "border-2[px] border-gray-400 text-center text-black" type = "number" placeholder ="Insert any id" v-model="selectedId" />
+      </div>
+
+      <div class = "flex flex-col gap-2">
+        <label for="doctor_name">Update name</label>
+        <input class = "border-2[px] border-gray-400 text-center text-black" type = "text" placeholder ="Insert any name" v-model="selectedName" />
+      </div>
+
+      <div class = "flex flex-col gap-2">
+        <label for="schedule">Update schedule</label>
+        <input class = "border-2[px] border-gray-400 text-center text-black" type = "text" placeholder ="Insert any weekday" v-model="selectedSchedule" />
+      </div>
+
+      <div class = "flex flex-col gap-2">
+        <label for="salary">Update salary</label>
+        <input class = "border-2[px] border-gray-400 text-center text-black" type = "number" placeholder ="Insert the salary" v-model="selectedSalary" />
+      </div>
+
+      <div class = "flex flex-col gap-2">
+        <label for="profile">Update profile</label>
+        <input class = "border-2[px] border-gray-400 text-center text-black" type = "text" placeholder ="Insert the profile" v-model="selectedProfile" />
+      </div>
+
+      <button @click = "modal = false" class = "w-[100px] h- [30px] bg-green-900 hover:bg-red-900 text-white rounded-x1" type ="button">Cancel</button>
+      <button @click = "modal = false" class = "w-[100px] h- [30px] bg-green-900 hover:bg-red-900 text-white rounded-x1" type ="submit">PUT</button>
+
+    </form>
+    </div>
+
     </main>
 </template>
 
@@ -70,6 +116,8 @@ import {ref} from 'vue';
 const getname = ref<string>('');
 const getid = ref<number>(0);
 const getschedule = ref<string>('');
+const getsalary = ref<number>(0);
+const getprofile = ref<string>('');
 const data = ref<any[]>([]);
 
 const postname = ref<string>('');
@@ -78,11 +126,21 @@ const postschedule = ref<string>('');
 const postsalary = ref<number>(0);
 const postprofile = ref<string>('');
 
+const selectedId = ref<number | null>(null);
+const selectedName = ref<string>('');
+const selectedSchedule = ref<string>('');
+const selectedSalary = ref<number>(0);
+const selectedProfile = ref<string>('');
+
+const modal = ref<boolean>(false);
+
 const fetchData = async () => {
   const response = await $fetch('/api/doctors', {
     params: { doctor_name: getname.value,
               doctor_id: getid.value,
               schedule: getschedule.value,
+              salary: getsalary.value,
+              profile: getprofile.value,
     },
   });
   data.value = response.getus || response;
@@ -103,6 +161,43 @@ const postData = async () => {
       profile: postprofile.value,
     },
   });
+}
+
+const deleteData = async (index: number) => {
+  const Delete = await $fetch('/api/doctors/', {
+    method: 'DELETE',
+    body: {
+      doctor_id: index,
+    },
+  })
+}
+
+const updateData = (index: number) => {
+  const doctor = data.value.find(doctor => doctor.doctor_id === index);
+  if (!doctor) return
+
+  selectedId.value = doctor.doctor_id;
+  selectedName.value = doctor.doctor_name;
+  selectedSchedule.value = doctor.schedule;
+  selectedSalary.value = doctor.salary;
+  selectedProfile.value = doctor.profile;
+
+  modal.value = true;
+}
+
+const putData = async () => {
+  if (selectedId.value === null) return alert("Please select a doctor to update")
+
+  const puts = await $fetch('/api/doctors/', {
+    method: 'PUT',
+    body: {
+      doctor_id: selectedId.value,
+      doctor_name: selectedName.value,
+      schedule: selectedSchedule.value,
+      salary: selectedSalary.value,
+      profile: selectedProfile.value,
+    },
+  })
 }
 
 definePageMeta({

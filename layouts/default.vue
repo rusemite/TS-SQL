@@ -13,7 +13,7 @@
         </nav>
     </header>
 
-    <main class = "h-screen bg-black text-white text-xl flex">
+    <main class = "min-h-screen bg-black text-white text-xl flex px-8 py-4">
         <div class = "m-auto">
              <slot />
         </div>

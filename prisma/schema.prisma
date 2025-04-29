@@ -39,10 +39,10 @@ model User {
   email         String    @unique
   password      String?
   name          String?
-  emailVerified DateTime? @db.Timestamp(6)
   image         String?
   createdat     DateTime  @default(now()) @db.Timestamp(6)
   updatedat     DateTime  @default(now()) @db.Timestamp(6)
+  emailVerified DateTime? @db.Timestamp(6)
   account       Account?
   Comment       Comment[]
   Post          Post[]
@@ -64,9 +64,9 @@ model doctors {
   doctor_name  String?        @db.VarChar(30)
   schedule     String?
   salary       Decimal?       @db.Money
-  profile      Int?
+  profile      String?        @db.VarChar(30)
   appointments appointments[]
-  profiles     profiles?      @relation(fields: [profile], references: [profile_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_profile")
+  profiles     profiles?      @relation(fields: [profile], references: [profile_name], onDelete: NoAction, onUpdate: NoAction, map: "fk_profile")
   treatments   treatments[]
 }
 
@@ -90,7 +90,7 @@ model patients {
 
 model profiles {
   profile_id   Int       @id @default(autoincrement())
-  profile_name String?   @db.VarChar(30)
+  profile_name String?   @unique(map: "unique_name") @db.VarChar(30)
   doctors      doctors[]
   drugs        drugs[]
 }

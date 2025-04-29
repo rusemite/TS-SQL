@@ -4,19 +4,25 @@ const prisma = new PrismaClient()
 
 export default defineEventHandler(async (event)=>  {
     const query = getQuery(event)
-    const doctor_name = query.name as string | undefined
+    const doctor_name = query.doctor_name as string | undefined
     const schedule = query.schedule as string | undefined
-    const doctor_id = parseInt(query.doctor_id) as number
+    const profile = query.profile as string | undefined
+    const salary = query.salary as number | undefined
+    const doctor_id = query.doctor_id as number | undefined
 
-    const getus = (doctor_name != undefined || doctor_id != undefined || schedule != undefined) ? await event.context.prisma.doctors.findMany({
+    const getus = (doctor_name != undefined || doctor_id != undefined || schedule != undefined || salary != undefined || profile != undefined) ? await event.context.prisma.doctors.findMany({
         where: {
-            doctor_id: (doctor_name != undefined) ? doctor_id : undefined,
+            doctor_id: doctor_id || undefined,
             doctor_name: {
                 contains: doctor_name,
             },
             schedule: {
                 contains: schedule,
             },
+            salary: salary || undefined,
+            profile: {
+                contains: profile,
+            }
         }
     })
         : await event.context.prisma.doctors.findMany()
