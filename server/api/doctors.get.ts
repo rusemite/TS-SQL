@@ -8,7 +8,7 @@ export default defineEventHandler(async (event)=>  {
     const schedule = query.schedule as string | undefined
     const profile = query.profile as string | undefined
     const salary = query.salary as number | undefined
-    const doctor_id = query.doctor_id as number | undefined
+    const doctor_id = Number(query.doctor_id) as number | undefined
 
     const getus = (doctor_name != undefined || doctor_id != undefined || schedule != undefined || salary != undefined || profile != undefined) ? await event.context.prisma.doctors.findMany({
         where: {
